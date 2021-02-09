@@ -70,10 +70,10 @@ elseif ZPlanes > 3
         end
     end
 elseif ZPlanes < 4
-    Focus_Ch1 = max(Ch1,3);
-    Focus_Ch2 = max(Ch2,3);
-    if Channels>2, Focus_Ch3 = max(Ch3,3); else end
-    if Channels>3, Focus_Ch4 = max(Ch4,3); else end
+    Focus_Ch1 = max(Ch1(:,:),3);
+    Focus_Ch2 = max(Ch2(:,:),3);
+    if Channels>2, Focus_Ch3 = max(Ch3(:,:),3); else end
+    if Channels>3, Focus_Ch4 = max(Ch4(:,:),3); else end
 end
 
 if exist('Focus_Ch3') == 0, Focus_Ch3 = Ch3; else end;
