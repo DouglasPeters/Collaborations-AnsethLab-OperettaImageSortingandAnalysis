@@ -1,7 +1,7 @@
 clear; clc; tic; cd(userpath);
 %% Editables %%
 
-Folder = 'C:\Users\dplad\Desktop\Test\'; 
+Folder = 'C:\Users\dope8688\Downloads\r01c01f03.ome.tiff\'; 
 %Where are the images located? IMPORTANT: Use format 'FILEPATH\'. The apostrophes and ending slash are important.
 
 FigShow = 1; %Do you want to show the Figure with segmentation overlay? (1=yes, 0=no)
@@ -14,14 +14,14 @@ Channels = 4; %How many fluorescent channels are in the image?
 
 CH_DAPI = 1; %Which channel corresponds to DAPI signal?
 
-CH_CellMask = 2; %Which channel corresponds to CellMask (CM) signal?
+CH_CellMask = 4; %Which channel corresponds to CellMask (CM) signal?
 CM_LowSizeFilt = 1000; %What is the minimum area of cell objects that you want to include in your analysis? (pixels^2)
 
 TF_Analysis = 0; %Will do TF translocalization analysis (1=yes, 0=no)
 CH_TF = 3; %Which channel corresponds to transcription factor (TF) signal?
 
 aSMA_Analysis = 1; %Will do gradient-based aSMA analysis (1=yes, 0=no)
-CH_aSMA = 3; %Which channel corresponds to aSMA signal?
+CH_aSMA = 2; %Which channel corresponds to aSMA signal?
 aSMA_ImageSave = 0; %Do you want to save an image of the aSMA channel and gradient image? (1=yes, 0=no)
 
 SplitClusterResults = 0; %Will split results for each well into clusters (>MinClusterSize) and non-clusters (<MinClusterSize). (1=yes, 0=no)
@@ -99,10 +99,13 @@ disp('Generating in-focus images...');
 
 Results(f).ZFocus = ZFocus(f,1);
 
-if Results(f).ZFocus == 1 || Results(f).ZFocus == ZPlanes,
-warning('No in-focus plane found. Continuing to next image.');
-pause(2);
-continue
+if ZPlanes > 3
+    if Results(f).ZFocus == 1 || Results(f).ZFocus == ZPlanes
+    warning('No in-focus plane found. Continuing to next image.');
+    pause(2);
+    continue
+    else
+    end
 else
 end
 
@@ -157,7 +160,7 @@ elseif CH_CellMask == 4, CellMask = Focus_Ch4;
 else end
 
 clearvars NearestNuc;
-[Results_CellAnalysis,NearestNucDistanceFiltered] = CellularAnalysis(DAPI_75Percentile,DAPI_Watershed_BW2,Channels,CMseg_props,CM_IndCells,DAPI,Focus_Ch2,Focus_Ch3,CellMask);
+[Results_CellAnalysis,NearestNucDistanceFiltered] = CellularAnalysis(DAPI_75Percentile,DAPI_Watershed_BW2,Channels,CMseg_props,CM_IndCells,DAPI,Focus_Ch1,Focus_Ch2,Focus_Ch3,Focus_Ch4,CellMask);
 
 clearvars NucleiNumber AdjustedNucleiNumber;
 for q = 1:size(Results_CellAnalysis,2)
@@ -227,7 +230,7 @@ figimage1 = imoverlay(DAPI.*75,imdilate(DAPI_Watershed_Perim,strel('disk',1)),[0
 figimage1 = imoverlay(figimage1,imdilate(totalfilteredcellperims,strel('disk',1)),[0.5 0 0]);
 figimage2 = imoverlay(CellMask.*25,imdilate(totalfilteredcellperims,strel('disk',1)),[0.5 0 0]);
 figimage2 = imoverlay(figimage2,imdilate(DAPI_Watershed_Perim,strel('disk',1)),[0 0 0.5]);
-figimage3 = Blank3D(:,:,1:3);
+figimage3 = zeros(ResY,ResX,3);
 
 C = [figimage1 figimage2 figimage3];
 imshow(C); title('Segmentation and Analysis Summary');
@@ -309,21 +312,24 @@ for r = 1:size(Results_CellAnalysis,2)
     end
 end
 
-if Results(f).ZFocus == 1 || Results(f).ZFocus == ZPlanes,
-    Results(f).NucNearestNeighborDistance = "";
-    Results(f).TotalNuclei = 0;
-    Results(f).NucleiPerGroup = 0;
-    Results(f).AdjustedTotalNuclei = 0;
-    Results(f).AdjustedNucGroupSizes = "";
-    Results(f).MeanIntensities = ""; %Each column is a channel.
-    Results(f).SumIntensities = ""; %Each column is a channel.
-    Results(f).CMNumber = 0;
-    Results(f).CMAreas = "";
-    Results(f).CMTotalArea = 0;
-    if TF_Analysis==1, Results(f).TFNucCytoRatios = 0;
-    else end
-    if aSMA_Analysis>0, Results(f).aSMAGradientMeans = 0;
-    else end
+if ZPlanes > 3
+    if Results(f).ZFocus == 1 || Results(f).ZFocus == ZPlanes,
+        Results(f).NucNearestNeighborDistance = "";
+        Results(f).TotalNuclei = 0;
+        Results(f).NucleiPerGroup = 0;
+        Results(f).AdjustedTotalNuclei = 0;
+        Results(f).AdjustedNucGroupSizes = "";
+        Results(f).MeanIntensities = ""; %Each column is a channel.
+        Results(f).SumIntensities = ""; %Each column is a channel.
+        Results(f).CMNumber = 0;
+        Results(f).CMAreas = "";
+        Results(f).CMTotalArea = 0;
+        if TF_Analysis==1, Results(f).TFNucCytoRatios = 0;
+        else end
+        if aSMA_Analysis>0, Results(f).aSMAGradientMeans = 0;
+        else end
+    else 
+    end
 else
     Results(f).NucNearestNeighborDistance = NearestNucDistanceFiltered;
     Results(f).TotalNuclei = sum(NucleiNumber,'all');
