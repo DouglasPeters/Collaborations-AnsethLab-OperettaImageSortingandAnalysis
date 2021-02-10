@@ -1,5 +1,5 @@
 
-function [Results_CellAnalysis,NearestNucDistanceFiltered] = CellularAnalysis(DAPI_75Percentile,DAPI_Watershed_BW2,Channels,CMseg_props,CM_IndCells,DAPI,Focus_Ch2,Focus_Ch3,CellMask)
+function [Results_CellAnalysis,NearestNucDistanceFiltered] = CellularAnalysis(DAPI_75Percentile,DAPI_Watershed_BW2,Channels,CMseg_props,CM_IndCells,DAPI,Focus_Ch1,Focus_Ch2,Focus_Ch3,Focus_Ch4,CellMask)
 
 for i = 1:size(CM_IndCells,2)    
     Results_CellAnalysis(i).LogImage = CM_IndCells(i).LogImage;
@@ -31,8 +31,8 @@ for i = 1:size(CM_IndCells,2)
     Results_CellAnalysis(i).NuclearAreaToBeAdjusted = sum(RawNucAreas(NucAdjustmentFilter),'all');
     Results_CellAnalysis(i).AdjustedNucleiNumber = Results_CellAnalysis(i).NucleiNumber + round(Results_CellAnalysis(i).NuclearAreaToBeAdjusted/(DAPI_75Percentile));
     
-    Results_CellAnalysis(i).MeanCh1 = mean(DAPI(CM_IndCells(i).LogFilledHoles),'all');
-    Results_CellAnalysis(i).SumCh1 = sum(DAPI(CM_IndCells(i).LogFilledHoles),'all');
+    Results_CellAnalysis(i).MeanCh1 = mean(Focus_Ch1(CM_IndCells(i).LogFilledHoles),'all');
+    Results_CellAnalysis(i).SumCh1 = sum(Focus_Ch1(CM_IndCells(i).LogFilledHoles),'all');
     Results_CellAnalysis(i).MeanCh2 = mean(Focus_Ch2(CM_IndCells(i).LogFilledHoles),'all');
     Results_CellAnalysis(i).SumCh2 = sum(Focus_Ch2(CM_IndCells(i).LogFilledHoles),'all');
     if Channels>2, 
@@ -41,8 +41,8 @@ for i = 1:size(CM_IndCells,2)
     else
     end;
     if Channels>3, 
-        Results_CellAnalysis(i).MeanCh4 = mean(CellMask(CM_IndCells(i).LogFilledHoles),'all');
-        Results_CellAnalysis(i).SumCh4 = sum(CellMask(CM_IndCells(i).LogFilledHoles),'all');
+        Results_CellAnalysis(i).MeanCh4 = mean(Focus_Ch4(CM_IndCells(i).LogFilledHoles),'all');
+        Results_CellAnalysis(i).SumCh4 = sum(Focus_Ch4(CM_IndCells(i).LogFilledHoles),'all');
     else
     end;
 end
