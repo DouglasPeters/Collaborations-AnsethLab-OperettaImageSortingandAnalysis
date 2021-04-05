@@ -153,6 +153,12 @@ elseif CH_DAPI == 3, DAPI = Focus_Ch3;
 elseif CH_DAPI == 4, DAPI = Focus_Ch4;
 else end
 
+if CH_CellMask == 1, CellMask = Focus_Ch1;
+elseif CH_CellMask == 2, CellMask = Focus_Ch2;
+elseif CH_CellMask == 3, CellMask = Focus_Ch3;
+elseif CH_CellMask == 4, CellMask = Focus_Ch4;
+else end
+
 clearvars NearestNuc;
 [Results_CellAnalysis,NearestNucDistanceFiltered] = CellularAnalysis(DAPI_75Percentile,DAPI_Watershed_BW2,Channels,CMseg_props,CM_IndCells,DAPI,Focus_Ch1,Focus_Ch2,Focus_Ch3,Focus_Ch4);
 
